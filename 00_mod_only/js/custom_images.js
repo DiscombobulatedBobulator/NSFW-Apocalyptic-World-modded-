@@ -1,28 +1,25 @@
+const image_list = {
+	asian: {
+		black: 5
+	},
+	white:{
+		black:		5,
+		blonde:		5,
+		brun:		5,
+		red:		5
+	},
+	latina:{
+		black:		5,
+		blonde:		5,
+		brun:		5,
+		red:		5
+	}
+}
 class CustomImage{
 	constructor(containerElement){
 		if (!V.custom_images) V.custom_images = {};
 		//this.base_dir = "images/custom_portraits"
 		this.base_dir = "../fc-pregmod-pregmod-master/bin/public/resources/custom"
-		this.image_list = {
-			asian: {
-				subfolders: false,
-				total:	68
-			},
-			white:{
-				subfolders: true,
-				black:		108,
-				blonde:		116,
-				brun:		121,
-				red:		110
-			},
-			latina:{
-				subfolders: true,
-				black:		108,
-				blonde:		116,
-				brun:		121,
-				red:		110
-			}
-		}
 		
 		this.containerElement = containerElement;
 		this.slave = getCharacter(containerElement.attr('data-id'));
@@ -88,25 +85,26 @@ class CustomImage{
 			"misc";
 			
 		//check if there is a valid image
-		let has_valid_directory = this.image_list[this.slave.race] && this.image_list[this.slave.race].subfolders ? this.image_list[this.slave.race][hair_category] : true
+		let has_valid_directory = !image_list[this.slave.race] ? false: !image_list[this.slave.race][hair_category] ? false : image_list[this.slave.race][hair_category]
 		//generate path
 		if (has_valid_directory) {
-			let img_name;
-			let img_path = "";
-			switch (this.slave.race){
+			let img_name = jsRandom(image_list[this.slave.race][hair_category]).toString() + ".png";
+			let img_path = `${this.base_dir}/race_asian/${hair_category}/${img_name}`;
+
+			/*switch (this.slave.race){
 				case "white":
-					img_name = jsRandom(this.image_list.white[hair_category]).toString() + ".png";
+					img_name = jsRandom(image_list.white[hair_category]).toString() + ".png";
 					img_path = `${this.base_dir}/hair_${hair_category}/${img_name}`;
 					break;
 				case "latina":
-					img_name = jsRandom(this.image_list.white[hair_category]).toString() + ".png";
+					img_name = jsRandom(image_list.white[hair_category]).toString() + ".png";
 					img_path = `${this.base_dir}/hair_${hair_category}/${img_name}`;
 					break;
 				case "asian":
-					img_name = jsRandom(this.image_list.asian.total).toString() + ".png";
+					img_name = jsRandom(image_list.asian.total).toString() + ".png";
 					img_path = `${this.base_dir}/race_asian/${img_name}`;
 					break;
-			}
+			}*/
 			//console.log(img_path, this.slave)
 			if (this.checkIfImageExists(img_path)){
 				V.custom_images[this.slave.id] = img_path;
