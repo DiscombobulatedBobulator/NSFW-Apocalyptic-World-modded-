@@ -18,8 +18,8 @@ const image_list = {
 class CustomImage{
 	constructor(containerElement){
 		if (!V.custom_images) V.custom_images = {};
-		//this.base_dir = "images/custom_portraits"
-		this.base_dir = "../fc-pregmod-pregmod-master/bin/public/resources/custom"
+		this.base_dir = "images/custom_portraits"
+		//this.base_dir = "../fc-pregmod-pregmod-master/bin/public/resources/custom"
 		
 		this.containerElement = containerElement;
 		this.slave = getCharacter(containerElement.attr('data-id'));
