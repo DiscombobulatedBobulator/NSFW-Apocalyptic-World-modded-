@@ -30,6 +30,21 @@ var jsRandom = (min, max=null) => {
 	else return Math.clamp(Math.floor(Math.random() * (max-min+1)) + min, min, max);
 };
 
+const editHTML = {
+	add(element, substring, addedText){
+		let textObj = $(element).contents().filter(function(){
+			return this.nodeType == 3 && this.data.includes(substring)
+		})[0]
+		$(textObj).after(addedText);
+	},
+	replace(element, replaceWith, addedText){
+		let textObj = $(element).contents().filter(function(){
+			return this.nodeType == 3 && this.data.includes(substring)
+		})[0]
+		textObj.nodeValue = replaceWith;
+	}
+}
+
 $(window).ready(()=>{
 	var myPromise = new Promise(function(resolve){
 		var main_init = false;

@@ -239,8 +239,7 @@ const passage_mods = {
 		effect(){
 			let slave = getSlave($('#npc_info_right').attr('data-id'))
 			if (slave){
-				$('[data-passage]').contents().filter(function(){ return this.nodeType == 3 && this.nodeValue == " moans as you milk her.  " })
-				.replaceWith(" moans as you milk her. Her body reacts positively to you. <b>(Horny + 20)</b>");
+				editHTML.add($('[data-passage]'), "moans as you milk her", "Her body reacts positively to you <b>(Horny + 20)</b>")
 				slave.horny += 20;
 			}
 		},
@@ -253,8 +252,10 @@ const passage_mods = {
 			if ($('#passages').text().includes("WON")){
 				V.player.money += prizeMoney - 5;
 				$('#t3 .money').text(`${V.player.money}`)
-				$('[data-passage]').contents().filter(function(){ return this.nodeType == 3 && this.nodeValue == " the fight.  " })
-				.replaceWith(` the fight. You've won $${prizeMoney}.`);
+				editHTML.add($('[data-passage]'), "the fight.", `You've won $${prizeMoney}`)
+				
+				/*$('[data-passage]').contents().filter(function(){ return this.nodeType == 3 && this.nodeValue == " the fight.  " })
+				.replaceWith(` the fight. You've won $${prizeMoney}.`);*/
 			}
 		},
 		fired: false
@@ -337,55 +338,57 @@ const passage_mods = {
 		},
 		fired: false
 	},
-	"Mc fuck":{ //action buttons
-		effect(e){
-			if (e.type == ":passagerender"){
-				let orgasmBar_container = '<div id="orgasmBar_container"></div>',
-					orgasmBar = `<div><b>${V.tmpGirl.horny}/100</b> arousal</div>`;
-					
-				$('.action-image').after(orgasmBar_container);
-				$('#orgasmBar_container').append(orgasmBar);
-				
-				$('#orgasmBar_container').css({
-					'width':		'80%',
-					'transform':	'translate(10%, 2.5%)',
-					'height':		'20px',
-					'background':	'rgba(0, 0, 0, 0.6)',
-					'border':		'2px sold rgba(100, 100, 100, 0.5)'
-				})
-				$('#orgasmBar_container > div').css({
-					'width':		`${V.tmpGirl.horny}%`,
-					'height':		'20px',
-					'background':	'rgb(200, 20, 130)',
-					'transition':	'width 1s ease-in',
-					'display':		'flex',
-					//'justify-content':	'center',
-					'align-items':	'center',
-					'white-space':	'pre'
-				})
-			}
+	"Mc fuck":{
+		async effect(e){
+			//update
+			V.tmpGirl.horny = getCharacter(V.tmpGirl.id).horny
 			
-			if (e.type == "e:link_pressed"){
-				$('.clearMe').remove();
-				if (e.detail.html.includes('img')){
-					let link = $(e.detail),
-						slave = V.tmpGirl,
-						sex_action = e.detail.content.replace('images/game/misc/actions/', '').replace('.png', '');
-					let action_dict = new sexual_actions(slave),
-						outcome = action_dict[sex_action]();
-					
-					if (outcome){
-						slave.horny -= outcome.oldHorny;
-						slave.horny += outcome.newHorny;
-						slave.horny = Math.clamp(slave.horny, 0, 199);
+			//orgasm bar
+			var orgasmBar_container = '<div id="orgasmBar_container" class="clearMe"></div>',
+				orgasmBar = `<div><b>${V.tmpGirl.horny}/100</b> arousal</div>`;
+			
+			$(orgasmBar_container).insertBefore('#action-scene')
+			$('#orgasmBar_container').append(orgasmBar);
+			
+			$('#orgasmBar_container').css({
+				'width':		'80%',
+				'transform':	'translate(10%, 0)',
+				'height':		'20px',
+				'background':	'rgba(0, 0, 0, 0.6)',
+				'border':		'2px sold rgba(100, 100, 100, 0.5)',
+				'margin':		'2.5% 0'
+			})
+			$('#orgasmBar_container > div').css({
+				'width':		`${V.tmpGirl.horny}%`,
+				'height':		'20px',
+				'background':	'rgb(200, 20, 130)',
+				'transition':	'width 1s ease-in',
+				'display':		'flex',
+				//'justify-content':	'center',
+				'align-items':	'center',
+				'white-space':	'pre'
+			})
+			
+			//dynamic sexual outcome + sexual_skill+
+			let sex_action = V.sexAction;
+				
+			new Promise((resolve)=>{
+				setTimeout(()=>{
+					let action_dict = new sexual_actions(V.tmpGirl),
+						outcome = !action_dict[sex_action] ? null : action_dict[sex_action]();
 						
-						if (slave.horny >= 100){ //orgasm
-							slave.horny -= 100
-							slave.relationship = Math.min(slave.relationship + 5, 100);
-							slave.happy = Math.min(slave);
-							slave.orgasms++
-							let guyGirl = slave.gender == 0 ? 'girl' : 'guy;'
-							$('#passages strong:contains("Horny + ")').after(`<p style="white-space:'pre'"><span class="gender-${guyGirl}">${slave.name}</span> has an orgasm! <strong> (Happy / Relationship + 5)</strong></p>`)
+						if (outcome){
+						V.tmpGirl.horny -= outcome.oldHorny;
+						V.tmpGirl.horny += outcome.newHorny;
+						V.tmpGirl.horny = Math.clamp(V.tmpGirl.horny, 0, 199);
+						
+						if (V.tmpGirl.horny >= 100){ //orgasm
+							V.tmpGirl.horny -= 100
+							V.tmpGirl.relationship = Math.min(V.tmpGirl.relationship + 5, 100);
+							V.tmpGirl.happy = Math.min(V.tmpGirl);
+							V.tmpGirl.orgasms++
+							let guyGirl = V.tmpGirl.gender == 0 ? 'girl' : 'guy;'
+							$('#passages strong:contains("Horny + ")').after(`<p class="clearMe" style="white-space:'pre'"><span class="gender-${guyGirl}"><b>${V.tmpGirl.name}</b></span> has an orgasm! <strong> (Happy / Relationship + 5)</strong></p>`)
 						}
 						
 						$('#passages strong:contains("Horny + ")').text(`Horny + ${outcome.newHorny}`);
@@ -394,13 +397,26 @@ const passage_mods = {
 							$('#passages strong:contains("Horny + ")').append(`<br><i class="clearMe">Your sexual prowess has increased <b>(sexual skill: + 1)</i>`);
 						}
 					}
-					
-					let orgasmBar_container = $('#orgasmBar_container'),
-						orgasmBar = $('#orgasmBar_container > div');
-						
-					orgasmBar.css('width', `${slave.horny}%`)
-				}
+					resolve(V.tmpGirl.horny);
+				}, 500)
+			}).then((value)=>{
+				getCharacter(V.tmpGirl.id).horny = value;
+				$('#orgasmBar_container > div b').html(`${value}/100`);
+				$('#orgasmBar_container > div').css('width', `${value}%`);
+			})
+			
+			
+			//endurance+
+			let enduranceChance = (V.player.endurance < 40) ? 20: (V.player.endurance < 60) ? 40 : (V.player.endurance < 80) ? 60 : 80;
+			if ( enduranceChance <= jsRandom(100) ){
+				V.player.endurance++;
+				$('#passages strong:contains("Horny + ")').after("<p>You've increased your endurance <b>(Endurance +1)</b></p>");
+				$('#t3s span')[7].innerHTML = V.player.endurance.toString();
 			}
+			
+			
+			
+			
 		},
 		fired: false,
 		dont_clearMe: true
@@ -444,7 +460,7 @@ const passage_mods = {
 					action.name = enemyName;
 					action.attack = enemyAttack;
 					
-					if (dodgeChance <= jsRandom(100)){
+					if (dodgeChance >= jsRandom(100)){
 						hasDodged = true;
 						V.fight.hp += parseInt(enemyAttack);
 						action.src.replaceWith(`You've succesfully dodged ${enemyName}'s attempt to hit you!`);
@@ -457,6 +473,17 @@ const passage_mods = {
 					$('#fight-your-hp-count').html(`${V.fight.hp}`);
 				}
 			}))
+		},
+		fired: false
+	},
+	"Group workout - guests": {
+		effect(){
+			V.player.strength++;
+			V.player.endurance++;
+			editHTML.add($('#passage-group-workout-guests'), "The goal is not only to", "<br><br><span class='gender-guy'><b>Your</b></span> strength increased by 1<br><span class='gender-guy'><b>Your</b></span> endurance increased by 1")
+			
+			$('#t3s span')[6].innerHTML = V.player.endurance.toString();
+			$('#t3s span')[7].innerHTML = V.player.endurance.toString();
 		},
 		fired: false
 	},
@@ -474,10 +501,10 @@ const passage_mods_map = {
 		"Fight": 				passage_mods["Fight"],
 		
 		"Forest-action-chop-wood": 	passage_mods["Forest-action-chop-wood"],
+		"Group workout - guests": 	passage_mods["Group workout - guests"],
 	},
 	"e:link_pressed": {
 		"Slave - wash": passage_mods["Slave - wash"],
-		"Mc fuck":		passage_mods["Mc fuck"],
 	}
 }
 
