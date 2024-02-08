@@ -69,9 +69,9 @@ function applyMods(){
 				hotkeys_created = true;
 			
 				//override images
-				new CustomImage($('#npc_info_right'));
-				new CustomImage($('.npc-say-visual'));
-				new CustomImage($('.companion.tooltip'));
+				$('#npc_info_right').toArray().forEach((container)=> {new CustomImage(container)});
+				$('.npc-say-visual').toArray().forEach((container)=> {new CustomImage(container)});
+				$('.companion.tooltip').toArray().forEach((container)=> {new CustomImage(container)});
 				
 				//reset passageMods
 				prev_passage_injectors.forEach((value) => {
@@ -93,9 +93,9 @@ function applyMods(){
 				addHotkeyTags();
 				
 				//override images
-				new CustomImage($('#npc_info_right'));
-				new CustomImage($('.npc-say-visual'));
-				new CustomImage($('.companion.tooltip'));
+				$('#npc_info_right').toArray().forEach((container)=> {new CustomImage(container)});
+				$('.npc-say-visual').toArray().forEach((container)=> {new CustomImage(container)});
+				$('.companion.tooltip').toArray().forEach((container)=> {new CustomImage(container)});
 				
 				//reset passageMods
 				prev_passage_injectors.forEach((value) => {
