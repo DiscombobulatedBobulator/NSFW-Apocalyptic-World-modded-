@@ -1,0 +1,52 @@
+#passages [data-passage] .dice{
+    max-width:	20%;
+    min-width:	10px;
+    min-height:	10px;
+    
+    width:	20% !important;
+    height:	auto;
+    
+    position:	absolute;
+    top:		2.5%;
+    left:		2.5%;
+    
+    z-index:	100;
+    transition:	opacity 1s;
+}
+#passages [data-passage] .type{
+    max-width:	20%;
+    min-width:	10px;
+    min-height:	10px;
+    
+    width:		17.4% !important;
+    font:		80% "Times New Roman";
+    color:		black;
+    
+    display:			flex;
+    align-items:		center;
+    justify-content:	center;
+    
+    position:	absolute;
+    top:		5%;
+    left:		2.5%;
+    
+    z-index:		100;
+    border-radius:	25%;
+    background:		rgb(200, 200, 150);
+    transition:		opacity 1s;
+}
+center > img {
+    width:	90%;
+}
+.companion{
+    width:	60px;
+    height:	90px;
+}
+    .companion > div.girl_info_picture{
+        margin-left:	0;
+        margin-top: 	0;
+        transform:		none;
+        
+        height:		100%;
+        width:		100%;
+    }
